@@ -18,11 +18,12 @@ namespace LoreTrackerAPI.Controllers
             this.dbContext = dbContext;
         }
 
-        // GET: api/loreentries
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<LoreEntryDto>>> GetLoreEntries()
+        // GET: api/api/world/{worldId}/loreentries
+        [HttpGet("/api/world/{worldId}/loreentries")]
+        public async Task<ActionResult<IEnumerable<LoreEntryDto>>> GetLoreEntriesByWorld(int worldId)
         {
             var loreEntries = await dbContext.LoreEntries
+                .Where(l => l.WorldId == worldId)
                 .Include(l => l.World)
                 .Select(l => new LoreEntryDto
                 {
@@ -95,7 +96,7 @@ namespace LoreTrackerAPI.Controllers
                 WorldId = loreEntry.WorldId
             };
 
-            return CreatedAtAction(nameof(GetLoreEntries), new { id = loreEntry.Id }, result);
+            return CreatedAtAction(nameof(GetLoreEntry), new { id = loreEntry.Id }, result);
         }
 
         // PUT: api/loreentries/{id}
@@ -112,7 +113,7 @@ namespace LoreTrackerAPI.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(loreEntry);
         }
 
         // DELETE: api/loreEntries/{id}
@@ -126,7 +127,7 @@ namespace LoreTrackerAPI.Controllers
             dbContext.LoreEntries.Remove(loreEntry);
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
     }
 }

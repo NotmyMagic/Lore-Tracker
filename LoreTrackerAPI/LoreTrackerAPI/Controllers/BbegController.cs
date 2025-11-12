@@ -17,11 +17,12 @@ namespace LoreTrackerAPI.Controllers
             this.dbContext = dbContext;
         }
 
-        // GET: api/bbegs
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BbegDto>>> GetBbegs()
+        // GET: api/world/{worldId}/bbegs
+        [HttpGet("/api/world/{worldId}/bbegs")]
+        public async Task<ActionResult<IEnumerable<BbegDto>>> GetBbegsByWorld(int worldId)
         {
             var bbegs = await dbContext.Bbegs
+                .Where(b => b.WorldId == worldId)
                 .Include(b => b.World)
                 .Select(b => new BbegDto
                 {
@@ -119,7 +120,7 @@ namespace LoreTrackerAPI.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(bbeg);
         }
 
         // DELETE: api/bbegs/{id}
@@ -133,7 +134,7 @@ namespace LoreTrackerAPI.Controllers
             dbContext.Bbegs.Remove(bbeg);
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
     }
 }
