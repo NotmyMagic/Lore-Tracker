@@ -17,11 +17,12 @@ namespace LoreTrackerAPI.Controllers
             this.dbContext = dbContext;
         }
 
-        // GET: api/factions
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<FactionDto>>> GetFactions()
+        // GET: api/world/{worldId}/factions
+        [HttpGet("/api/world/{worldId}/factions")]
+        public async Task<ActionResult<IEnumerable<FactionDto>>> GetFactionsbyWorld(int worldId)
         {
             var factions = await dbContext.Factions
+                .Where(f => f.WorldId == worldId)
                 .Include(f => f.World)
                 .Select(f => new FactionDto
                 {
@@ -42,7 +43,7 @@ namespace LoreTrackerAPI.Controllers
 
         // GET: api/factions/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<FactionDto>> GetFactions(int id)
+        public async Task<ActionResult<FactionDto>> GetFaction(int id)
         {
             var faction = await dbContext.Factions
                 .Include(f => f.World)
@@ -102,7 +103,7 @@ namespace LoreTrackerAPI.Controllers
                 WorldId = faction.WorldId
             };
 
-            return CreatedAtAction(nameof(GetFactions), new { id = faction.Id }, result);
+            return CreatedAtAction(nameof(GetFaction), new { id = faction.Id }, result);
         }
 
         // PUT: api/factions/{id}
@@ -121,7 +122,7 @@ namespace LoreTrackerAPI.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(faction);
         }
 
         // DELETE: api/factions/{id}
@@ -135,7 +136,7 @@ namespace LoreTrackerAPI.Controllers
             dbContext.Factions.Remove(faction);
             await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
     }
 }
