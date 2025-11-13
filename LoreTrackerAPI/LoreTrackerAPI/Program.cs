@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString("DefaultConnection")
+    : builder.Configuration.GetConnectionString("RenderConnection");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -10,12 +14,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MyDbContext>(options =>
-options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+options.UseNpgsql(connectionString));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy => policy
-        .WithOrigins("http://localhost:3000")
+        .WithOrigins(builder.Environment.IsDevelopment()
+        ? "http://localhost:3000"
+        : "https://loretracker.netlify.app")
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
