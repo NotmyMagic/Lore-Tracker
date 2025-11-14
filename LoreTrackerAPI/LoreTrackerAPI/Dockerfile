@@ -9,21 +9,20 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY LoreTrackerAPI.csproj ./
-RUN dotnet restore "./LoreTrackerAPI.csproj"
+COPY LoreTrackerAPI/ ./LoreTrackerAPI/
 
-# Copy all source code
-COPY . ./
+# Restore
+WORKDIR /src/LoreTrackerAPI
+RUN dotnet restore "LoreTrackerAPI.csproj"
 
-# Build the project
-WORKDIR "/src/LoreTrackerAPI"
-RUN dotnet build "./LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# Build
+RUN dotnet build "LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Publish stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-WORKDIR "/src/LoreTrackerAPI"
-RUN dotnet publish "./LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+WORKDIR /src/LoreTrackerAPI
+RUN dotnet publish "LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Final runtime image
 FROM base AS final
