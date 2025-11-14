@@ -10,19 +10,23 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 COPY LoreTrackerAPI.csproj ./
-RUN dotnet restore "/LoreTrackerAPI.csproj"
+RUN dotnet restore "./LoreTrackerAPI.csproj"
 
-COPY . .
+# Copy all source code
+COPY . ./
+
+# Build the project
 WORKDIR "/src/LoreTrackerAPI"
 RUN dotnet build "./LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Publish stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
+WORKDIR "/src/LoreTrackerAPI"
 RUN dotnet publish "./LoreTrackerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Final runtime image
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app/publish ./
 ENTRYPOINT ["dotnet", "LoreTrackerAPI.dll"]
