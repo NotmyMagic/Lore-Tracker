@@ -9,7 +9,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy csproj and restore (relative path)
 COPY LoreTrackerAPI.csproj ./
 RUN dotnet restore "./LoreTrackerAPI.csproj"
 
