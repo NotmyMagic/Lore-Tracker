@@ -9,8 +9,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["LoreTrackerAPI/LoreTrackerAPI.csproj", "LoreTrackerAPI/"]
-RUN dotnet restore "./LoreTrackerAPI/LoreTrackerAPI.csproj"
+COPY LoreTrackerAPI.csproj ./
+RUN dotnet restore "/LoreTrackerAPI.csproj"
 
 COPY . .
 WORKDIR "/src/LoreTrackerAPI"
